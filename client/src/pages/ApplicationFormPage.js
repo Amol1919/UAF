@@ -5,14 +5,22 @@ import { useFormContext } from '../context/FormContext';
 function ApplicationFormPage() {
   const { updateFormData } = useFormContext();
 
-  // Set form type to 'application' when component mounts
+  // Remove updateFormData from dependencies
   useEffect(() => {
     updateFormData({ 
       type: 'application',
-      // Reset server-specific field
       serverName: '' 
     });
-  }, [updateFormData]);
+    
+    // Cleanup on unmount
+    return () => {
+      updateFormData({
+        type: '',
+        serverName: '',
+        appName: ''
+      });
+    };
+  }, []); // Empty dependency array = run only once
 
   return (
     <div className="application-form-page">
