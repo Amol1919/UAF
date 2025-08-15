@@ -1,9 +1,12 @@
+import React from 'react';
+import LandingPage from './LandingPage';
 import './App.css';
+
 
 function App() {
   return (
-    <div style={{ textAlign: "center", marginTop: "50px" }}>
-      <h1>Request Access for Server or Application</h1>
+     <div className="App">
+     <LandingPage />
     </div>
   );
 }

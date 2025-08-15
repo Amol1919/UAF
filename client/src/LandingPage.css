@@ -1,0 +1,122 @@
+/* src/LandingPage.css */
+.landing-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 2rem;
+  background: #f8f9fa;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.header h1 {
+  font-size: 2.5rem;
+  color: #333;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.access-options {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+  max-width: 900px;
+}
+
+.option-card {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  padding: 2.5rem;
+  text-align: center;
+  width: 380px;
+  transition: transform 0.3s ease;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.option-card:hover {
+  transform: translateY(-8px);
+  box-shadow: 0 10px 25px rgba(0,0,0,0.12);
+}
+
+.option-icon {
+  width: 80px;
+  height: 80px;
+  margin-bottom: 1.5rem;
+  object-fit: contain;
+}
+
+.option-card h2 {
+  font-size: 1.8rem;
+  color: #333;
+  margin-bottom: 1rem;
+  font-weight: 600;
+}
+
+.option-card p {
+  font-size: 1.1rem;
+  color: #555;
+  margin: 0.2rem 0;
+  line-height: 1.6;
+}
+
+.subtext {
+  color: #6c757d;
+  font-size: 1rem;
+  margin: 0.5rem 0 1.8rem;
+}
+
+.access-btn {
+  background: #0d6efd;
+  color: white;
+  border: none;
+  padding: 0.9rem 1.8rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+  width: 100%;
+  max-width: 200px;
+  margin-top: 1rem;
+}
+
+.access-btn:hover {
+  background: #0b5ed7;
+  transform: scale(1.03);
+}
+
+/* Responsive adjustments */
+@media (max-width: 900px) {
+  .access-options {
+    flex-direction: column;
+    align-items: center;
+  }
+  
+  .option-card {
+    width: 100%;
+    max-width: 500px;
+  }
+}
+
+@media (max-width: 480px) {
+  .header h1 {
+    font-size: 2rem;
+  }
+  
+  .option-card {
+    padding: 1.8rem;
+  }
+  
+  .option-card h2 {
+    font-size: 1.6rem;
+  }
+}
