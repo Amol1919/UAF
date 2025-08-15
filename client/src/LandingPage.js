@@ -1,10 +1,12 @@
-// src/LandingPage.js
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import './LandingPage.css';
 import serverIcon from './assets/icons/server.png';
 import applicationIcon from './assets/icons/application.png';
 
 function LandingPage() {
+  const navigate = useNavigate();
+
   return (
     <div className="landing-container">
       <div className="header">
@@ -17,7 +19,12 @@ function LandingPage() {
           <h2>Server</h2>
           <p>Manage and request</p>
           <p className="subtext">server-level permissions</p>
-          <button className="access-btn">Access Form</button>
+          <button 
+            className="access-btn"
+            onClick={() => navigate('/server-form')}
+          >
+            Access Form
+          </button>
         </div>
         
         <div className="option-card">
@@ -25,7 +32,12 @@ function LandingPage() {
           <h2>Application</h2>
           <p>Manage and request</p>
           <p className="subtext">app-level permissions</p>
-          <button className="access-btn">Access Form</button>
+          <button 
+            className="access-btn"
+            onClick={() => navigate('/application-form')}
+          >
+            Access Form
+          </button>
         </div>
       </div>
     </div>

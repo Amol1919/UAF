@@ -1,0 +1,76 @@
+/* Form container */
+.form-container {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.access-form {
+  background: white;
+  border-radius: 12px;
+  box-shadow: 0 6px 15px rgba(0,0,0,0.08);
+  padding: 2rem;
+  margin-top: 1.5rem;
+}
+
+.access-form h2 {
+  text-align: center;
+  color: #333;
+  margin-bottom: 1.5rem;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.form-group {
+  margin-bottom: 1.5rem;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 0.5rem;
+  font-weight: 500;
+  color: #444;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+  padding: 0.8rem;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 1rem;
+}
+
+.form-group textarea {
+  height: 120px;
+  resize: vertical;
+}
+
+.submit-btn {
+  background: #0d6efd;
+  color: white;
+  border: none;
+  padding: 1rem 2rem;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 1.1rem;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 1rem;
+  transition: background 0.3s;
+}
+
+.submit-btn:hover {
+  background: #0b5ed7;
+}
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+  .form-container {
+    padding: 1rem;
+  }
+  
+  .access-form {
+    padding: 1.5rem;
+  }
+}
