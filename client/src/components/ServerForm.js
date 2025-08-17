@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useFormContext } from '../context/FormContext';
 import SignaturePad from './SignaturePad';
-import '../pages/ServerFormPage.css';
+import '../pages/ServerFormPage.css'; // Make sure to import the correct CSS file
 
 function ServerForm() {
   const { formData, updateFormData } = useFormContext();
@@ -14,6 +14,30 @@ function ServerForm() {
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateFormData({ [name]: value });
+  };
+
+  // Handle checkbox changes for access level
+  const handleAccessChange = (type) => {
+    let newAccess = [...formData.accessLevel];
+    
+    // Toggle the selected type
+    if (newAccess.includes(type)) {
+      newAccess = newAccess.filter(t => t !== type);
+    } else {
+      // Enforce mutual exclusion rules
+      if (type === 'Disable-Account') {
+        // If selecting Disable, remove Add and Edit
+        newAccess = ['Disable-Account'];
+      } else {
+        // If selecting Add/Edit, remove Disable
+        newAccess = newAccess.filter(t => t !== 'Disable-Account');
+        newAccess.push(type);
+        // Remove duplicates
+        newAccess = [...new Set(newAccess)];
+      }
+    }
+    
+    updateFormData({ accessLevel: newAccess });
   };
 
   const handleSignatureSave = (signature, type) => {
@@ -92,74 +116,96 @@ function ServerForm() {
           </div>
         </div>
         
-        {/* Access Section */}
-        <div className="form-section">
-          <h2 className="section-title">Access: ADD/Edit/Disable-Account</h2>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label>Server Name</label>
-              <input
-                type="text"
-                name="serverName"
-                value={formData.serverName}
-                onChange={handleChange}
-                required
-              />
-            </div>
-            
-            <div className="form-group">
-              <label>IP</label>
-              <input
-                type="text"
-                name="ipAddress"
-                value={formData.ipAddress}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-          
-          <div className="form-row">
-            <div className="form-group">
-              <label>Access Level</label>
-              <select
-                name="accessLevel"
-                value={formData.accessLevel}
-                onChange={handleChange}
-                required
-              >
-                <option value="">Select Access Level</option>
-                <option value="Full Administrative Access">Full Administrative Access</option>
-                <option value="Read-Only Access">Read-Only Access</option>
-                <option value="Limited Access">Limited Access</option>
-              </select>
-            </div>
-            
-            <div className="form-group">
-              <label>IPGAP Login name</label>
-              <input
-                type="text"
-                name="ipgapLogin"
-                value={formData.ipgapLogin}
-                onChange={handleChange}
-                required
-              />
-            </div>
-          </div>
-          
-          <div className="form-group">
-            <label>HR Activation/De-activation</label>
+       {/* Access Section */}
+<div className="form-section">
+  <h2 className="section-title">Access: ADD/Edit/Disable-Account</h2>
+  
+  <div className="form-row">
+    <div className="form-group">
+      <label>Server Name</label>
+      <input
+        type="text"
+        name="serverName"
+        value={formData.serverName}
+        onChange={handleChange}
+        required
+      />
+    </div>
+    
+    <div className="form-group">
+      <label>IP</label>
+      <input
+        type="text"
+        name="ipAddress"
+        value={formData.ipAddress}
+        onChange={handleChange}
+        required
+      />
+    </div>
+  </div>
+  
+  <div className="form-row">
+    <div className="form-group">
+      <label>Access Level</label>
+      <div className="access-level-group">
+        <div className="access-level-options">
+          <label className="access-level-option">
             <input
-              type="text"
-              name="hrActivation"
-              value={formData.hrActivation}
-              onChange={handleChange}
-              placeholder="Month YYYY"
-              required
+              type="checkbox"
+              checked={formData.accessLevel.includes('Add')}
+              onChange={() => handleAccessChange('Add')}
+              disabled={formData.accessLevel.includes('Disable-Account')}
             />
-          </div>
+            <span>Add</span>
+          </label>
+          
+          <label className="access-level-option">
+            <input
+              type="checkbox"
+              checked={formData.accessLevel.includes('Edit')}
+              onChange={() => handleAccessChange('Edit')}
+              disabled={formData.accessLevel.includes('Disable-Account')}
+            />
+            <span>Edit</span>
+          </label>
+          
+          <label className="access-level-option">
+            <input
+              type="checkbox"
+              checked={formData.accessLevel.includes('Disable-Account')}
+              onChange={() => handleAccessChange('Disable-Account')}
+              disabled={formData.accessLevel.includes('Add') || formData.accessLevel.includes('Edit')}
+            />
+            <span>Disable Account</span>
+          </label>
         </div>
+      </div>
+    </div>
+    
+    <div className="form-group">
+      <label>IPGAP Login name</label>
+      <input
+        type="text"
+        name="ipgapLogin"
+        value={formData.ipgapLogin}
+        onChange={handleChange}
+        required
+      />
+    </div>
+  </div>
+  
+  <div className="form-group">
+    <label>HR Activation/De-activation</label>
+    <input
+      type="text"
+      name="hrActivation"
+      value={formData.hrActivation}
+      onChange={handleChange}
+      placeholder="Month YYYY"
+      required
+    />
+  </div>
+</div>
         
         {/* Requested By Section */}
         <div className="form-section">
