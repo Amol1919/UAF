@@ -1,30 +1,23 @@
 import React, { useEffect } from 'react';
-import AccessForm from '../components/AccessForm';
 import { useFormContext } from '../context/FormContext';
+import ServerForm from '../components/ServerForm';
+import './ServerFormPage.css';
 
 function ServerFormPage() {
-  const { updateFormData } = useFormContext();
+  const { resetForm } = useFormContext();
 
-  // Remove updateFormData from dependencies
   useEffect(() => {
-    updateFormData({ 
-      type: 'server',
-      appName: '' 
-    });
+    // Reset form when component mounts
+    resetForm();
     
-    // Cleanup on unmount
     return () => {
-      updateFormData({
-        type: '',
-        serverName: '',
-        appName: ''
-      });
+      // Cleanup if needed
     };
-  }, []); // Empty dependency array = run only once
+  }, [resetForm]);
 
   return (
     <div className="server-form-page">
-      <AccessForm />
+      <ServerForm />
     </div>
   );
 }
