@@ -6,14 +6,10 @@ import './ServerFormPage.css';
 function ServerFormPage() {
   const { resetForm } = useFormContext();
 
-  useEffect(() => {
-    // Reset form when component mounts
-    resetForm();
-    
-    return () => {
-      // Cleanup if needed
-    };
-  }, [resetForm]);
+ useEffect(() => {
+  resetForm();            // run only once when the page mounts
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, []);
 
   return (
     <div className="server-form-page">
