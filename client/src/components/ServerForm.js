@@ -1,41 +1,88 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFormContext } from '../context/FormContext';
 import SignaturePad from './SignaturePad';
 import '../pages/ServerFormPage.css';
+import amolIcon from '../assets/icons/Colorfull.png';
+import jiraIcon from '../assets/icons/HS1.png';
+import confluenceIcon from '../assets/icons/Triangle1.png';
+import rapportIcon from '../assets/icons/C1.png';
+
+// mapping applications to icons
+
+const APP_ICONS = {
+  Amol: amolIcon,          // will use C1.png
+  Jira: jiraIcon,          // will use HS1.png
+  Confluence: confluenceIcon, // Triangle1.png
+  rapport: rapportIcon,
+};
+
+
+/* -------------------------
+   Simple data lists
+-------------------------- */
+const AGENCIES = [
+  'Finance',
+  'Human Resources',
+  'IT',
+  'Operations',
+  'Security',
+  'Legal',
+  'Procurement',
+  'Compliance',
+  'Engineering',
+  'Marketing',
+];
+
+// Map each agency to its applications
+const AGENCY_APPS = {
+  Finance: ['Ledger', 'PayPro', 'TaxSuite'],
+  'Human Resources': ['OnboardX', 'TimeTrack', 'Benefits360'],
+  IT: ['Amol', 'Jira', 'Confluence', 'GitHub', 'ServiceDesk'],
+  Operations: ['FleetOps', 'InventoryOne', 'Scheduler'],
+  Security: ['GuardEye', 'Vault', 'IDS'],
+  Legal: ['CaseBox', 'ContractPro'],
+  Procurement: ['BuyRight', 'VendorHub'],
+  Compliance: ['PolicyTrack', 'RiskWatch'],
+  Engineering: ['CADPro', 'BuildPipe', 'SpecSheet'],
+  Marketing: ['MailBlast', 'AdManager', 'SocialBee'],
+};
 
 function ServerForm() {
   const { formData, updateFormData } = useFormContext();
 
-  // Local state to keep saved signatures (images)
+  /* -------------------------
+     Title prefix (from app)
+  -------------------------- */
+  const titlePrefix = formData.application ? `${formData.application} ` : '';
+
+  /* -------------------------
+     Signatures (as before)
+  -------------------------- */
   const [signatureData, setSignatureData] = useState({
     requestedBy: null,
     approvedBy: null,
     itAdmin: null,
   });
 
-  // Always treat accessLevel as an array
+  /* -------------------------
+     Access level (array)
+  -------------------------- */
   const accessLevel = Array.isArray(formData.accessLevel)
     ? formData.accessLevel
     : [];
 
-  // Handle text inputs
   const handleChange = (e) => {
     const { name, value } = e.target;
     updateFormData({ [name]: value });
   };
 
-  // Handle checkbox rules for Access
   const handleAccessChange = (type) => {
     let next = [...accessLevel];
-
     if (next.includes(type)) {
-      // If clicked again, turn OFF
       next = next.filter((t) => t !== type);
     } else {
-      if (type === 'Disable-Account') {
-        next = ['Disable-Account']; // exclusive
-      } else {
-        // Add/Edit ON → Disable OFF
+      if (type === 'Disable-Account') next = ['Disable-Account'];
+      else {
         next = next.filter((t) => t !== 'Disable-Account');
         next.push(type);
       }
@@ -43,12 +90,10 @@ function ServerForm() {
     updateFormData({ accessLevel: next });
   };
 
-  // Save signature image
-  const handleSignatureSave = (signature, who) => {
-    setSignatureData((prev) => ({ ...prev, [who]: signature }));
+  const handleSignatureSave = (sig, who) => {
+    setSignatureData((prev) => ({ ...prev, [who]: sig }));
   };
 
-  // When form is submitted
   const handleSubmit = (e) => {
     e.preventDefault();
     const submission = { ...formData, signatures: signatureData };
@@ -56,14 +101,200 @@ function ServerForm() {
     alert('Form submitted! Check console for data.');
   };
 
+  /* -------------------------
+     Searchable Agency combo
+  -------------------------- */
+  const [agencyQuery, setAgencyQuery] = useState(formData.agency || '');
+  const [agencyOpen, setAgencyOpen] = useState(false);
+
+  const filteredAgencies =
+    agencyQuery.trim() === ''
+      ? AGENCIES
+      : AGENCIES.filter((a) =>
+          a.toLowerCase().includes(agencyQuery.toLowerCase())
+        );
+
+  const handleAgencyInput = (e) => {
+    const val = e.target.value;
+    setAgencyQuery(val);
+    setAgencyOpen(true); // show list while typing
+    // we commit to context only when user selects
+  };
+
+  const handleAgencySelect = (value) => {
+    setAgencyQuery(value);
+    setAgencyOpen(false);
+    // when agency changes, clear application too
+    updateFormData({ agency: value, application: '' });
+    setApplicationQuery(''); // clear app box
+  };
+
+  /* -----------------------------
+     Searchable Application combo
+     - depends on selected agency
+  ------------------------------ */
+  const [applicationQuery, setApplicationQuery] = useState(
+    formData.application || ''
+  );
+  const [applicationOpen, setApplicationOpen] = useState(false);
+
+  const appsForAgency =
+    formData.agency && AGENCY_APPS[formData.agency]
+      ? AGENCY_APPS[formData.agency]
+      : [];
+
+  const filteredApps =
+    applicationQuery.trim() === ''
+      ? appsForAgency
+      : appsForAgency.filter((a) =>
+          a.toLowerCase().includes(applicationQuery.toLowerCase())
+        );
+
+  // If agency gets cleared, also clear application query
+  useEffect(() => {
+    if (!formData.agency) {
+      setApplicationQuery('');
+      setApplicationOpen(false);
+    }
+  }, [formData.agency]);
+
+  const handleApplicationInput = (e) => {
+    const val = e.target.value;
+    setApplicationQuery(val);
+    setApplicationOpen(true);
+  };
+
+  const handleApplicationSelect = (value) => {
+    setApplicationQuery(value);
+    setApplicationOpen(false);
+    updateFormData({ application: value });
+  };
+
+  const appDisabled = !formData.agency; // disable app until agency selected
+
+  // Add this line right here
+  const iconSrc = formData.application && APP_ICONS[formData.application];
+
   return (
     <div className="server-form-container">
-      <h1 className="form-title">
-        ROMS Production Server Windows Administrator Access Form
-      </h1>
-      <p className="form-subtitle">(SOX Control DIT-14: Production Access)</p>
+      <div className="page-title">
+        {iconSrc && (
+          <img
+            src={iconSrc}
+            alt={`${formData.application} icon`}
+            className="app-icon"
+          />
+        )}
+        <h1 className="form-title">
+          {formData.application ? `${formData.application} ` : ''}
+          Production Server Windows Administrator Access Form
+        </h1>
+      </div>
 
-      <form onSubmit={handleSubmit} className="server-form">
+
+    <form onSubmit={handleSubmit} className="server-form">
+        {/* ===== Agency (standalone) ===== */}
+        <div className="agency-bar">
+          <label className="agency-label">Agency</label>
+
+          <div
+            className="combobox"
+            onBlur={() => setTimeout(() => setAgencyOpen(false), 150)}
+          >
+            <input
+              type="text"
+              className="combo-input"
+              value={agencyQuery}
+              onChange={handleAgencyInput}
+              onFocus={() => setAgencyOpen(true)}
+              placeholder="Start typing to search..."
+              autoComplete="off"
+            />
+            <button
+              type="button"
+              className="combo-toggle"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => setAgencyOpen((o) => !o)}
+              aria-label="Toggle agency list"
+            >
+              ▾
+            </button>
+
+            {agencyOpen && (
+              <ul className="combo-list">
+                {filteredAgencies.length === 0 ? (
+                  <li className="combo-empty">No matches</li>
+                ) : (
+                  filteredAgencies.map((a) => (
+                    <li
+                      key={a}
+                      className="combo-item"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleAgencySelect(a)}
+                    >
+                      {a}
+                    </li>
+                  ))
+                )}
+              </ul>
+            )}
+          </div>
+        </div>
+
+        {/* ===== Application (depends on Agency) ===== */}
+        <div className="agency-bar">{/* reuse same style for simplicity */}
+          <label className="agency-label">Application</label>
+
+          <div
+            className="combobox"
+            onBlur={() => setTimeout(() => setApplicationOpen(false), 150)}
+          >
+            <input
+              type="text"
+              className="combo-input"
+              value={applicationQuery}
+              onChange={handleApplicationInput}
+              onFocus={() => !appDisabled && setApplicationOpen(true)}
+              placeholder={
+                appDisabled
+                  ? 'Select an agency first'
+                  : 'Type to search applications...'
+              }
+              autoComplete="off"
+              disabled={appDisabled}
+            />
+            <button
+              type="button"
+              className="combo-toggle"
+              onMouseDown={(e) => e.preventDefault()}
+              onClick={() => !appDisabled && setApplicationOpen((o) => !o)}
+              aria-label="Toggle application list"
+              disabled={appDisabled}
+            >
+              ▾
+            </button>
+
+            {!appDisabled && applicationOpen && (
+              <ul className="combo-list">
+                {filteredApps.length === 0 ? (
+                  <li className="combo-empty">No matches</li>
+                ) : (
+                  filteredApps.map((a) => (
+                    <li
+                      key={a}
+                      className="combo-item"
+                      onMouseDown={(e) => e.preventDefault()}
+                      onClick={() => handleApplicationSelect(a)}
+                    >
+                      {a}
+                    </li>
+                  ))
+                )}
+              </ul>
+            )}
+          </div>
+        </div>
+
         {/* ================= General Information ================= */}
         <div className="form-section">
           <h2 className="section-title">General Information</h2>
@@ -119,7 +350,6 @@ function ServerForm() {
 
         {/* ================= Access ================= */}
         <div className="form-section">
-          {/* Centered row: Access + each checkbox */}
           <div
             style={{
               display: 'flex',
@@ -165,7 +395,6 @@ function ServerForm() {
             </label>
           </div>
 
-          {/* Blue underline separator */}
           <div
             style={{
               width: '100%',
@@ -174,7 +403,6 @@ function ServerForm() {
             }}
           ></div>
 
-          {/* Two rows of inputs */}
           <div className="form-row">
             <div className="form-group">
               <label>Server Name</label>
@@ -310,7 +538,9 @@ function ServerForm() {
 
         {/* ================= Submit ================= */}
         <div className="form-actions">
-          <button type="submit" className="submit-btn">Submit Request</button>
+          <button type="submit" className="submit-btn">
+            Submit Request
+          </button>
         </div>
       </form>
     </div>

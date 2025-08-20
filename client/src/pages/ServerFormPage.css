@@ -179,6 +179,140 @@
   cursor: pointer;
   transition: filter 120ms ease, transform 120ms ease;
 }
+
+/* ===== Agency combobox (minimal) ===== */
+.agency-bar {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: var(--radius);
+  padding: 0.9rem 1rem 1rem;
+  margin-bottom: 1rem;
+  display: grid;
+  grid-template-columns: 120px 1fr;
+  gap: 0.75rem 1rem;
+  align-items: center;
+}
+.agency-label {
+  color: var(--text);
+  font-weight: 600;
+  text-align: right;
+}
+
+.combobox {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+.combo-input {
+  width: 100%;
+  padding: 0.7rem 2.2rem 0.7rem 0.8rem; /* space for toggle */
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: #fff;
+  color: var(--text);
+  font-size: 0.98rem;
+  outline: none;
+  transition: border-color 120ms ease, box-shadow 120ms ease;
+}
+.combo-input:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-weak);
+}
+
+.combo-toggle {
+  position: absolute;
+  right: 6px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  font-size: 1rem;
+  opacity: 0.7;
+}
+.combo-toggle:hover { opacity: 1; }
+
+.combo-list {
+  position: absolute;
+  top: calc(100% + 6px);
+  left: 0;
+  right: 0;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+  max-height: 220px;
+  overflow: auto;
+  z-index: 20;
+  padding: 0.25rem;
+  list-style: none;
+  margin: 0;
+}
+
+.combo-input[disabled] {               /* show disabled state clearly */
+  background: #f5f7fa;
+  cursor: not-allowed;
+}
+
+.combo-item {
+  padding: 0.55rem 0.6rem;
+  border-radius: 6px;
+  cursor: pointer;
+}
+.combo-item:hover {
+  background: var(--accent-weak);
+}
+.combo-empty {
+  padding: 0.6rem 0.7rem;
+  color: var(--muted);
+}
+
+.page-title {
+  display: flex;
+  align-items: center;
+  justify-content: center;   /* keep centered like before */
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+/* Override the global .form-title only when inside .page-title */
+.page-title .form-title {
+  
+  margin: 0;            /* remove default h1 margins */
+  text-align: left;     /* don't center inside the flex row */
+  flex: 0 0 auto;       /* prevent taking full width */
+}
+
+.app-icon {
+  width: 48px;
+  height: 48px;
+  padding: 6px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  object-fit: contain;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+}
+
+@media (max-width: 768px) {
+  .agency-bar { grid-template-columns: 1fr; gap: .5rem; padding: .8rem; }
+  .agency-label { text-align: left; }
+  .app-icon { width: 40px; height: 40px; padding: 5px; }
+  .form-row { grid-template-columns: 1fr; }
+  .server-form-container { padding: 1.25rem .9rem; }
+}
+
+/* Mobile: stack label above input */
+@media (max-width: 768px) {
+  .agency-bar {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+    padding: 0.8rem;
+  }
+  .agency-label {
+    text-align: left;
+  }
+}
+
+
 .submit-btn:hover { filter: brightness(0.96); }
 .submit-btn:active { transform: translateY(1px); }
 

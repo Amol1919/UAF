@@ -66,11 +66,17 @@ export function FormProvider({ children }) {
       requestedByDate: '',
       approvedByName: '',
       approvedByTitle: '',
-      approvedByDate: '',
+      approvedByDate: '', 
       itRole: '',
       itName: '',
       itDate: '',
       remarks: '',
+      // initial formData (add these two)
+      agency: "",
+      searchQuery: "",
+      // inside resetForm() return object (add the same two)
+      agency: "",
+      searchQuery: "",
       requestedBySignature: null,
       approvedBySignature: null,
       itAdminSignature: null
