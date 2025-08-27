@@ -5,6 +5,7 @@ import React, { createContext, useState, useContext } from 'react';
 const initialState = {
   // Flow
   type: '', // 'server' | 'application'
+  notifyEmail: '',
 
   // Common user info (support both 'name' and 'userName' for compatibility)
   name: '',

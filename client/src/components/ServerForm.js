@@ -177,7 +177,9 @@ function ServerForm() {
       </div>
 
       <form onSubmit={handleSubmit} className="server-form">
+
         {/* ------- Agency ------- */}
+        
         <div className="agency-bar">
           <label className="agency-label">Agency</label>
           <div
@@ -200,7 +202,6 @@ function ServerForm() {
               onClick={() => setAgencyOpen((o) => !o)}
               aria-label="Toggle agency list"
             >
-              ▾
             </button>
             {agencyOpen && (
               <ul className="combo-list">
@@ -351,6 +352,63 @@ function ServerForm() {
               </div>
 
               <div className="table-cell hr-section">
+
+{/* test code */}
+<div className="table-row">
+  <div className="table-cell">
+    <label>IPGAP Login name</label>
+    <input
+      type="text"
+      name="ipgapLogin"
+      value={formData.ipgapLogin}
+      onChange={handleChange}
+      required
+    />
+  </div>
+  
+{/* NEW: Notification Email row */}
+<div className="table-row">
+  <div className="table-cell">
+    <label>Notification Email (test recipient)</label>
+    <input
+      type="email"
+      name="notifyEmail"
+      value={formData.notifyEmail || ''}
+      onChange={handleChange}
+      placeholder="test@example.com"
+      required
+    />
+    <div style={{ marginTop: '0.6rem' }}>
+      <button
+        type="button"
+        className="submit-btn"
+        onClick={async () => {
+          try {
+            const res = await fetch('http://localhost:4000/api/send-test-email', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({
+                to: formData.notifyEmail,
+                name: formData.name || formData.userName || 'User',
+                application: formData.application || formData.appName || 'Application',
+                serverName: formData.serverName || 'N/A'
+              })
+            });
+            const data = await res.json().catch(() => ({}));
+            alert(res.ok ? 'Test email sent ✅' : `Failed ❌: ${data?.error || 'unknown error'}`);
+          } catch (e) {
+            alert('Failed ❌: ' + (e?.message || 'network error'));
+          }
+        }}
+      >
+        Send Test Email
+      </button>
+    </div>
+  </div>
+  <div className="table-cell">{/* empty to keep grid aligned */}</div>
+</div>
+</div>
+
                 {/* One-line HR controls with spacing */}
                 <div className="hr-inline-row">
                   <span className="hr-text">HR</span>
