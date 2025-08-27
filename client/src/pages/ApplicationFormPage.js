@@ -1,30 +1,21 @@
+// src/pages/ApplicationFormPage.js
 import React, { useEffect } from 'react';
-import AccessForm from '../components/AccessForm';
 import { useFormContext } from '../context/FormContext';
+import ApplicationForm from '../components/ApplicationForm';
+import './ServerFormPage.css'; // reuse the same styles
 
 function ApplicationFormPage() {
-  const { updateFormData } = useFormContext();
+  const { resetForm, updateFormData } = useFormContext();
 
-  // Remove updateFormData from dependencies
   useEffect(() => {
-    updateFormData({ 
-      type: 'application',
-      serverName: '' 
-    });
-    
-    // Cleanup on unmount
-    return () => {
-      updateFormData({
-        type: '',
-        serverName: '',
-        appName: ''
-      });
-    };
-  }, []); // Empty dependency array = run only once
+    resetForm();
+    updateFormData({ type: 'application' });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   return (
-    <div className="application-form-page">
-      <AccessForm />
+    <div className="server-form-page">
+      <ApplicationForm />
     </div>
   );
 }

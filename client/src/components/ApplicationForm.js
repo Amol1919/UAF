@@ -1,13 +1,14 @@
+// src/components/ApplicationForm.js
 import React, { useEffect, useState } from 'react';
 import { useFormContext } from '../context/FormContext';
 import SignaturePad from './SignaturePad';
-import '../pages/ServerFormPage.css';
-import './HRControls.css';
+import '../pages/ServerFormPage.css'; // reuse same look & feel
 import amolIcon from '../assets/icons/Colorfull.png';
 import jiraIcon from '../assets/icons/HS1.png';
 import confluenceIcon from '../assets/icons/Triangle1.png';
 import rapportIcon from '../assets/icons/C1.png';
 
+// App icons
 const APP_ICONS = {
   Amol: amolIcon,
   Jira: jiraIcon,
@@ -15,37 +16,30 @@ const APP_ICONS = {
   rapport: rapportIcon,
 };
 
+/* ------------------------- Simple data lists -------------------------- */
 const AGENCIES = [
   'Finance','Human Resources','IT','Operations','Security',
   'Legal','Procurement','Compliance','Engineering','Marketing',
 ];
 
 const AGENCY_APPS = {
-  Finance: ['Ledger','PayPro','TaxSuite'],
-  'Human Resources': ['OnboardX','TimeTrack','Benefits360'],
-  IT: ['Amol','Jira','Confluence','GitHub','ServiceDesk'],
-  Operations: ['FleetOps','InventoryOne','Scheduler'],
-  Security: ['GuardEye','Vault','IDS'],
-  Legal: ['CaseBox','ContractPro'],
-  Procurement: ['BuyRight','VendorHub'],
-  Compliance: ['PolicyTrack','RiskWatch'],
-  Engineering: ['CADPro','BuildPipe','SpecSheet'],
-  Marketing: ['MailBlast','AdManager','SocialBee'],
+  Finance: ['Ledger', 'PayPro', 'TaxSuite'],
+  'Human Resources': ['OnboardX', 'TimeTrack', 'Benefits360'],
+  IT: ['Amol', 'Jira', 'Confluence', 'GitHub', 'ServiceDesk'],
+  Operations: ['FleetOps', 'InventoryOne', 'Scheduler'],
+  Security: ['GuardEye', 'Vault', 'IDS'],
+  Legal: ['CaseBox', 'ContractPro'],
+  Procurement: ['BuyRight', 'VendorHub'],
+  Compliance: ['PolicyTrack', 'RiskWatch'],
+  Engineering: ['CADPro', 'BuildPipe', 'SpecSheet'],
+  Marketing: ['MailBlast', 'AdManager', 'SocialBee'],
 };
 
-// YYYY-MM-DD -> "Month YYYY"
-const toMonthYYYY = (iso) => {
-  if (!iso) return '';
-  const d = new Date(iso);
-  if (Number.isNaN(d)) return '';
-  return d.toLocaleString('default', { month: 'long', year: 'numeric' });
-};
-
-function ServerForm() {
+function ApplicationForm() {
   const { formData, updateFormData } = useFormContext();
 
+  /* ------------------------- Signatures -------------------------- */
   const [signatureData, setSignatureData] = useState({
-    requestedBy: null,
     approvedBy: null,
     itAdmin: null,
   });
@@ -61,8 +55,9 @@ function ServerForm() {
 
   const handleAccessChange = (type) => {
     let next = [...accessLevel];
-    if (next.includes(type)) next = next.filter((t) => t !== type);
-    else {
+    if (next.includes(type)) {
+      next = next.filter((t) => t !== type);
+    } else {
       if (type === 'Disable-Account') next = ['Disable-Account'];
       else {
         next = next.filter((t) => t !== 'Disable-Account');
@@ -73,19 +68,20 @@ function ServerForm() {
   };
 
   const handleSignatureSave = (sig, who) => {
-    setSignatureData((p) => ({ ...p, [who]: sig }));
+    setSignatureData((prev) => ({ ...prev, [who]: sig }));
   };
 
   const handleSubmit = (e) => {
     e.preventDefault();
     const submission = { ...formData, signatures: signatureData };
-    console.log('Form submitted:', submission);
-    alert('Form submitted! Check console for data.');
+    console.log('Application form submitted:', submission);
+    alert('Application form submitted! Check console for data.');
   };
 
-  // Searchable combos
+  /* ------------------------- Agency combobox -------------------------- */
   const [agencyQuery, setAgencyQuery] = useState(formData.agency || '');
   const [agencyOpen, setAgencyOpen] = useState(false);
+
   const filteredAgencies =
     agencyQuery.trim() === ''
       ? AGENCIES
@@ -94,7 +90,8 @@ function ServerForm() {
         );
 
   const handleAgencyInput = (e) => {
-    setAgencyQuery(e.target.value);
+    const val = e.target.value;
+    setAgencyQuery(val);
     setAgencyOpen(true);
   };
 
@@ -105,6 +102,7 @@ function ServerForm() {
     setApplicationQuery('');
   };
 
+  /* ------------------------- App combobox (depends on agency) -------------------------- */
   const [applicationQuery, setApplicationQuery] = useState(
     formData.application || ''
   );
@@ -130,7 +128,8 @@ function ServerForm() {
   }, [formData.agency]);
 
   const handleApplicationInput = (e) => {
-    setApplicationQuery(e.target.value);
+    const val = e.target.value;
+    setApplicationQuery(val);
     setApplicationOpen(true);
   };
 
@@ -142,23 +141,6 @@ function ServerForm() {
 
   const appDisabled = !formData.agency;
   const iconSrc = formData.application && APP_ICONS[formData.application];
-
-  // HR toggles (mutually exclusive; click again to uncheck)
-  const handleHrToggle = (action) => {
-    if (formData.hrAction === action) {
-      updateFormData({ hrAction: '', hrDate: '', hrActivation: '' });
-      return;
-    }
-    if (!formData.hrAction) {
-      updateFormData({ hrAction: action });
-    }
-  };
-
-  // Update hidden hrActivation from date (kept for compatibility)
-  const onHrDateChange = (e) => {
-    const value = e.target.value;
-    updateFormData({ hrDate: value, hrActivation: toMonthYYYY(value) });
-  };
 
   return (
     <div className="server-form-container">
@@ -172,7 +154,7 @@ function ServerForm() {
         )}
         <h1 className="form-title">
           {formData.application ? `${formData.application} ` : ''}
-          Production Server Windows Administrator Access Form
+          Application Access Request Form
         </h1>
       </div>
 
@@ -180,6 +162,7 @@ function ServerForm() {
         {/* ------- Agency ------- */}
         <div className="agency-bar">
           <label className="agency-label">Agency</label>
+
           <div
             className="combobox"
             onBlur={() => setTimeout(() => setAgencyOpen(false), 150)}
@@ -202,6 +185,7 @@ function ServerForm() {
             >
               ▾
             </button>
+
             {agencyOpen && (
               <ul className="combo-list">
                 {filteredAgencies.length === 0 ? (
@@ -226,6 +210,7 @@ function ServerForm() {
         {/* ------- Application ------- */}
         <div className="agency-bar">
           <label className="agency-label">Application</label>
+
           <div
             className="combobox"
             onBlur={() => setTimeout(() => setApplicationOpen(false), 150)}
@@ -254,6 +239,7 @@ function ServerForm() {
             >
               ▾
             </button>
+
             {!appDisabled && applicationOpen && (
               <ul className="combo-list">
                 {filteredApps.length === 0 ? (
@@ -275,133 +261,174 @@ function ServerForm() {
           </div>
         </div>
 
-        {/* ------- Main Form Section ------- */}
+        {/* ------- General Information ------- */}
         <div className="form-section">
-          {/* Access Controls */}
-          <div className="access-header">
-            <span className="access-title">Access:</span>
-            <div className="access-controls">
-              <label className="access-checkbox">
-                <input
-                  type="checkbox"
-                  checked={accessLevel.includes('Add')}
-                  onChange={() => handleAccessChange('Add')}
-                  disabled={accessLevel.includes('Disable-Account')}
-                />
-                Add
-              </label>
-              <label className="access-checkbox">
-                <input
-                  type="checkbox"
-                  checked={accessLevel.includes('Edit')}
-                  onChange={() => handleAccessChange('Edit')}
-                  disabled={accessLevel.includes('Disable-Account')}
-                />
-                Edit
-              </label>
-              <label className="access-checkbox">
-                <input
-                  type="checkbox"
-                  checked={accessLevel.includes('Disable-Account')}
-                  onChange={() => handleAccessChange('Disable-Account')}
-                  disabled={accessLevel.includes('Add') || accessLevel.includes('Edit')}
-                />
-                Disable Account
-              </label>
+          <h2 className="section-title">General Information</h2>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>User Name</label>
+              <input
+                type="text"
+                name="userName"
+                value={formData.userName}
+                onChange={handleChange}
+                required
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Department</label>
+              <input
+                type="text"
+                name="department"
+                value={formData.department}
+                onChange={handleChange}
+                required
+              />
             </div>
           </div>
 
-          <div className="section-divider"></div>
-
-          {/* Two columns */}
-          <div className="form-table">
-            <div className="table-row">
-              <div className="table-cell">
-                <label>Server Name</label>
-                <input
-                  type="text"
-                  name="serverName"
-                  value={formData.serverName}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-              <div className="table-cell">
-                <label>IP</label>
-                <input
-                  type="text"
-                  name="ipAddress"
-                  value={formData.ipAddress}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
+          <div className="form-row">
+            <div className="form-group">
+              <label>Job Title</label>
+              <input
+                type="text"
+                name="jobTitle"
+                value={formData.jobTitle}
+                onChange={handleChange}
+                required
+              />
             </div>
 
-            <div className="table-row">
-              <div className="table-cell">
-                <label>IPGAP Login name</label>
-                <input
-                  type="text"
-                  name="ipgapLogin"
-                  value={formData.ipgapLogin}
-                  onChange={handleChange}
-                  required
-                />
-              </div>
-
-              <div className="table-cell hr-section">
-                {/* One-line HR controls with spacing */}
-                <div className="hr-inline-row">
-                  <span className="hr-text">HR</span>
-
-                  <label className="hr-inline-option">
-                    <input
-                      type="checkbox"
-                      checked={formData.hrAction === 'Activation'}
-                      onChange={() => handleHrToggle('Activation')}
-                      disabled={formData.hrAction === 'De-activation'}
-                    />
-                    Activation
-                  </label>
-
-                  <span className="hr-sep">/</span>
-
-                  <label className="hr-inline-option">
-                    <input
-                      type="checkbox"
-                      checked={formData.hrAction === 'De-activation'}
-                      onChange={() => handleHrToggle('De-activation')}
-                      disabled={formData.hrAction === 'Activation'}
-                    />
-                    De-activation
-                  </label>
-                </div>
-
-                {/* Date only — Month text field hidden; value still updated internally */}
-                <div className="hr-dates">
-                  <input
-                    type="date"
-                    name="hrDate"
-                    value={formData.hrDate || ''}
-                    onChange={onHrDateChange}
-                    disabled={!formData.hrAction}
-                    className="hr-date-input"
-                    title={
-                      formData.hrAction
-                        ? `${formData.hrAction} date`
-                        : 'Select Activation or De-activation first'
-                    }
-                  />
-                </div>
-              </div>
+            <div className="form-group">
+              <label>Email ID</label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                required
+              />
             </div>
+          </div>
+        </div>
+
+        {/* ------- Access ------- */}
+        <div className="form-section">
+          <div
+            style={{
+              display: 'flex',
+              justifyContent: 'center',
+              alignItems: 'center',
+              gap: '1.2rem',
+              flexWrap: 'wrap',
+              marginBottom: '0.5rem',
+            }}
+          >
+            <span style={{ color: '#3498db', fontWeight: 700, fontSize: '1.25rem' }}>
+              Access:
+            </span>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#3498db', fontWeight: 600 }}>
+              <input
+                type="checkbox"
+                checked={accessLevel.includes('Add')}
+                onChange={() => handleAccessChange('Add')}
+                disabled={accessLevel.includes('Disable-Account')}
+              />
+              Add
+            </label>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#3498db', fontWeight: 600 }}>
+              <input
+                type="checkbox"
+                checked={accessLevel.includes('Edit')}
+                onChange={() => handleAccessChange('Edit')}
+                disabled={accessLevel.includes('Disable-Account')}
+              />
+              Edit
+            </label>
+
+            <label style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', color: '#3498db', fontWeight: 600 }}>
+              <input
+                type="checkbox"
+                checked={accessLevel.includes('Disable-Account')}
+                onChange={() => handleAccessChange('Disable-Account')}
+                disabled={accessLevel.includes('Add') || accessLevel.includes('Edit')}
+              />
+              Disable Account
+            </label>
+          </div>
+
+          <div className="section-underline"></div>
+
+          {/* ------- Application Details ------- */}
+          <div className="form-row">
+            <div className="form-group">
+              <label>Application Username (if different)</label>
+              <input
+                type="text"
+                name="appUserName"
+                value={formData.appUserName}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Role / Group</label>
+              <input
+                type="text"
+                name="appRole"
+                value={formData.appRole}
+                onChange={handleChange}
+                required
+              />
+            </div>
+          </div>
+
+          <div className="form-row">
+            <div className="form-group">
+              <label>Module / Feature</label>
+              <input
+                type="text"
+                name="appModule"
+                value={formData.appModule}
+                onChange={handleChange}
+              />
+            </div>
+
+            <div className="form-group">
+              <label>Environment</label>
+              <select
+                name="appEnv"
+                value={formData.appEnv}
+                onChange={handleChange}
+                required
+              >
+                <option value="">Select</option>
+                <option value="Production">Production</option>
+                <option value="UAT">UAT</option>
+                <option value="Development">Development</option>
+              </select>
+            </div>
+          </div>
+
+          <div className="form-group">
+            <label>Justification</label>
+            <textarea
+              name="justification"
+              value={formData.justification}
+              onChange={handleChange}
+              required
+            />
           </div>
         </div>
 
         {/* ------- Approved By ------- */}
         <div className="form-section">
           <h2 className="section-title">Approved By</h2>
+
           <div className="form-row">
             <div className="form-group">
               <label>Name</label>
@@ -413,6 +440,7 @@ function ServerForm() {
                 required
               />
             </div>
+
             <div className="form-group">
               <label>Title</label>
               <input
@@ -424,19 +452,22 @@ function ServerForm() {
               />
             </div>
           </div>
+
           <div className="form-group">
             <label>Signature</label>
             <SignaturePad onSave={(sig) => handleSignatureSave(sig, 'approvedBy')} />
           </div>
+
           <div className="form-group">
             <label>Date</label>
             <input type="date" name="approvedByDate" onChange={handleChange} required />
           </div>
         </div>
 
-        {/* ------- IT (Server Administrator) ------- */}
+        {/* ------- IT (Application Administrator) ------- */}
         <div className="form-section">
-          <h2 className="section-title">IT (Server Administrator)</h2>
+          <h2 className="section-title">IT (Application Administrator)</h2>
+
           <div className="form-row">
             <div className="form-group">
               <label>Role</label>
@@ -448,6 +479,7 @@ function ServerForm() {
                 required
               />
             </div>
+
             <div className="form-group">
               <label>Name</label>
               <input
@@ -459,14 +491,17 @@ function ServerForm() {
               />
             </div>
           </div>
+
           <div className="form-group">
             <label>Remarks</label>
             <textarea name="remarks" value={formData.remarks} onChange={handleChange} />
           </div>
+
           <div className="form-group">
             <label>Signature</label>
             <SignaturePad onSave={(sig) => handleSignatureSave(sig, 'itAdmin')} />
           </div>
+
           <div className="form-group">
             <label>Date</label>
             <input type="date" name="itAdminDate" onChange={handleChange} required />
@@ -484,4 +519,4 @@ function ServerForm() {
   );
 }
 
-export default ServerForm;
+export default ApplicationForm;
